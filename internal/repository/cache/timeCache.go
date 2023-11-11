@@ -24,7 +24,7 @@ func (c *TimeCache) Show(city string) repository.Forecast {
 
 func (c *TimeCache) IsExist(city string) bool {
 	if f, ok := c.m[city]; ok {
-		if f.CreatedAt.Before(time.Now().Add(repository.RecentTime)) {
+		if f.ValidUntilUTC.Before(time.Now().UTC()) {
 			return true
 		}
 		delete(c.m, city)

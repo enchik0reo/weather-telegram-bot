@@ -7,13 +7,10 @@ import (
 	"github.com/enchik0reo/weatherTGBot/pkg/e"
 )
 
-const (
-	RecentTime = 30 * time.Minute
-)
-
 type Storage interface {
-	SaveWeatherHistory(forecast Forecast) error
-	GetRecentForecasts(time.Duration) ([]Forecast, error)
+	SaveWeatherHistory(f Forecast) error
+	GetRecentForecasts() ([]Forecast, error)
+	CloseConnect() error
 }
 
 type Cache interface {
@@ -28,7 +25,7 @@ type Repository struct {
 }
 
 func New(s Storage, c Cache) (*Repository, error) {
-	forecasts, err := s.GetRecentForecasts(RecentTime)
+	forecasts, err := s.GetRecentForecasts()
 	if err != nil {
 		return nil, e.Wrap("can't warmup cache", err)
 	}
@@ -62,6 +59,10 @@ func (r Repository) IsExist(city string) bool {
 type Forecast struct {
 	CityName        string
 	UserName        string
-	CreatedAt       time.Time
+	ValidUntilUTC   time.Time
 	WeatherForecast weatherapi.WeatherForecast
+}
+
+func (s *Repository) CloseConnect() error {
+	return s.storage.CloseConnect()
 }

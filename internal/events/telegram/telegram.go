@@ -1,6 +1,14 @@
 package telegram
 
-import "github.com/enchik0reo/weatherTGBot/internal/clients/telegram"
+import (
+	"time"
+
+	"github.com/enchik0reo/weatherTGBot/internal/clients/telegram"
+)
+
+const (
+	RecentTime = 15 * time.Minute
+)
 
 type EventProcessor struct {
 	tg     *telegram.Client

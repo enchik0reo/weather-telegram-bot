@@ -40,7 +40,7 @@ func (db *DBStorage) SaveWeatherHistory(f repository.Forecast) error {
 
 	textData := fmt.Sprintf("%x", data)
 
-	if _, err := db.Exec(q, f.CityName, f.UserName, f.ValidUntilUTC, textData); err != nil {
+	if _, err := db.Exec(q, f.CityName, f.UserName, f.ValidUntilUTC.Format("2006-01-02 15:04:05"), textData); err != nil {
 		return e.Wrap("can't save into db", err)
 	}
 
@@ -48,9 +48,11 @@ func (db *DBStorage) SaveWeatherHistory(f repository.Forecast) error {
 }
 
 func (db *DBStorage) GetRecentForecasts() ([]repository.Forecast, error) {
-	q := `SELECT forecast FROM weather WHERE valid_until_utc > $1` // How to make this work?
+	q := `SELECT city, user_name, valid_until_utc, weather_forecast FROM weather WHERE valid_until_utc > $1` // How to make this work?
 
-	rows, err := db.Query(q, time.Now().UTC()) // Huh?
+	qTime := time.Now().UTC().Format("2006-01-02 15:04:05")
+
+	rows, err := db.Query(q, qTime) // Huh?
 	if err != nil {
 		return nil, e.Wrap("can't load forecasts from db", err)
 	}

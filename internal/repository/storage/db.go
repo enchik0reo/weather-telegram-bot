@@ -33,14 +33,12 @@ func New(host, port, user, password, dbname, sslmode string) (*DBStorage, error)
 func (db *DBStorage) SaveWeatherHistory(f repository.Forecast) error {
 	q := `INSERT INTO weather VALUES ($1, $2, $3, $4)`
 
-	data, err := json.MarshalIndent(f.WeatherForecast, "", " ")
+	jsonForecast, err := json.Marshal(f.WeatherForecast)
 	if err != nil {
 		return e.Wrap("can't save into db", err)
 	}
 
-	textData := fmt.Sprintf("%x", data)
-
-	if _, err := db.Exec(q, f.CityName, f.UserName, f.ValidUntilUTC.Format("2006-01-02 15:04:05"), textData); err != nil {
+	if _, err := db.Exec(q, f.CityName, f.UserName, f.ValidUntilUTC.Format("2006-01-02 15:04:05"), jsonForecast); err != nil {
 		return e.Wrap("can't save into db", err)
 	}
 
@@ -48,11 +46,11 @@ func (db *DBStorage) SaveWeatherHistory(f repository.Forecast) error {
 }
 
 func (db *DBStorage) GetRecentForecasts() ([]repository.Forecast, error) {
-	q := `SELECT city, user_name, valid_until_utc, weather_forecast FROM weather WHERE valid_until_utc > $1` // How to make this work?
+	q := `SELECT city, user_name, valid_until, weather_forecast FROM weather WHERE valid_until > $1`
 
 	qTime := time.Now().UTC().Format("2006-01-02 15:04:05")
 
-	rows, err := db.Query(q, qTime) // Huh?
+	rows, err := db.Query(q, qTime)
 	if err != nil {
 		return nil, e.Wrap("can't load forecasts from db", err)
 	}
@@ -62,14 +60,14 @@ func (db *DBStorage) GetRecentForecasts() ([]repository.Forecast, error) {
 
 	for rows.Next() {
 		var forecast repository.Forecast
-		var textData string
+		var jsonForecast []byte
 
-		err = rows.Scan(&forecast.CityName, &forecast.UserName, &forecast.ValidUntilUTC, &textData)
+		err = rows.Scan(&forecast.CityName, &forecast.UserName, &forecast.ValidUntilUTC, &jsonForecast)
 		if err != nil {
 			return nil, e.Wrap("can't scan forecast from db", err)
 		}
 
-		json.Unmarshal([]byte(textData), &forecast.WeatherForecast)
+		json.Unmarshal(jsonForecast, &forecast.WeatherForecast)
 
 		forecasts = append(forecasts, forecast)
 	}

@@ -1,21 +1,11 @@
 package events
 
+import "github.com/enchik0reo/weatherTGBot/internal/models"
+
 type Fetcher interface {
-	Fetch(limit int) ([]Event, error)
+	Fetch(limit int) ([]models.Event, error)
 }
 
 type Processor interface {
-	Process(e Event) error
-}
-
-type Type int
-
-const (
-	Unknown Type = iota
-	Message
-)
-
-type Event struct {
-	Type Type
-	Text string
+	Process(e models.Event) error
 }

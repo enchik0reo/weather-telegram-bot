@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/enchik0reo/weatherTGBot/internal/repository"
+	"github.com/enchik0reo/weatherTGBot/internal/models"
 	"github.com/enchik0reo/weatherTGBot/pkg/e"
+
 	_ "github.com/lib/pq"
 )
 
@@ -30,7 +31,7 @@ func New(host, port, user, password, dbname, sslmode string) (*DBStorage, error)
 	return &DBStorage{db}, nil
 }
 
-func (db *DBStorage) SaveWeatherHistory(f repository.Forecast) error {
+func (db *DBStorage) SaveWeatherHistory(f models.Forecast) error {
 	q := `INSERT INTO weather VALUES ($1, $2, $3, $4)`
 
 	jsonForecast, err := json.Marshal(f.WeatherForecast)
@@ -45,7 +46,7 @@ func (db *DBStorage) SaveWeatherHistory(f repository.Forecast) error {
 	return nil
 }
 
-func (db *DBStorage) GetRecentForecasts() ([]repository.Forecast, error) {
+func (db *DBStorage) GetRecentForecasts() ([]models.Forecast, error) {
 	q := `SELECT city, user_name, valid_until, weather_forecast FROM weather WHERE valid_until > $1`
 
 	qTime := time.Now().UTC().Format("2006-01-02 15:04:05")
@@ -56,10 +57,10 @@ func (db *DBStorage) GetRecentForecasts() ([]repository.Forecast, error) {
 	}
 	defer rows.Close()
 
-	forecasts := []repository.Forecast{}
+	forecasts := []models.Forecast{}
 
 	for rows.Next() {
-		var forecast repository.Forecast
+		var forecast models.Forecast
 		var jsonForecast []byte
 
 		err = rows.Scan(&forecast.CityName, &forecast.UserName, &forecast.ValidUntilUTC, &jsonForecast)

@@ -4,28 +4,28 @@ import (
 	"sync"
 	"time"
 
-	"github.com/enchik0reo/weatherTGBot/internal/repository"
+	"github.com/enchik0reo/weatherTGBot/internal/models"
 )
 
 type TimeCache struct {
-	m map[string]repository.Forecast
+	m map[string]models.Forecast
 	sync.RWMutex
 }
 
 func New() *TimeCache {
 	return &TimeCache{
-		m:       make(map[string]repository.Forecast),
+		m:       make(map[string]models.Forecast),
 		RWMutex: sync.RWMutex{},
 	}
 }
 
-func (c *TimeCache) Save(forecast repository.Forecast) {
+func (c *TimeCache) Save(forecast models.Forecast) {
 	c.Lock()
 	c.m[forecast.CityName] = forecast
 	c.Unlock()
 }
 
-func (c *TimeCache) Show(city string) repository.Forecast {
+func (c *TimeCache) Show(city string) models.Forecast {
 	c.RLock()
 	defer c.RUnlock()
 	return c.m[city]

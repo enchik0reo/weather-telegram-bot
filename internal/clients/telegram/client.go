@@ -8,6 +8,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/enchik0reo/weatherTGBot/internal/models"
 	"github.com/enchik0reo/weatherTGBot/pkg/e"
 )
 
@@ -34,7 +35,7 @@ func newBasePath(token string) string {
 	return "bot" + token
 }
 
-func (c *Client) GetUpdates(offset int, limit int) ([]Update, error) {
+func (c *Client) GetUpdates(offset int, limit int) ([]models.Update, error) {
 	q := url.Values{}
 	q.Add("offset", strconv.Itoa(offset))
 	q.Add("limit", strconv.Itoa(limit))
@@ -44,7 +45,7 @@ func (c *Client) GetUpdates(offset int, limit int) ([]Update, error) {
 		return nil, err
 	}
 
-	var res UpdatesResponse
+	var res models.UpdatesResponse
 
 	if err := json.Unmarshal(data, &res); err != nil {
 		return nil, err

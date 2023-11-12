@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"errors"
 	"time"
 
+	"github.com/enchik0reo/weatherTGBot/internal/models"
 	"github.com/enchik0reo/weatherTGBot/internal/weatherapi"
 	"github.com/enchik0reo/weatherTGBot/pkg/e"
 )
@@ -12,27 +14,20 @@ const (
 )
 
 type Storage interface {
-	SaveWeatherHistory(f Forecast) error
-	GetRecentForecasts() ([]Forecast, error)
+	SaveWeatherHistory(f models.Forecast) error
+	GetRecentForecasts() ([]models.Forecast, error)
 	CloseConnect() error
 }
 
 type Cache interface {
-	Save(forecast Forecast)
-	Show(city string) Forecast
+	Save(forecast models.Forecast)
+	Show(city string) models.Forecast
 	IsExist(city string) bool
 }
 
 type Repository struct {
 	storage Storage
 	cache   Cache
-}
-
-type Forecast struct {
-	CityName        string
-	UserName        string
-	ValidUntilUTC   time.Time
-	WeatherForecast weatherapi.WeatherForecast
 }
 
 func New(s Storage, c Cache) (*Repository, error) {
@@ -48,7 +43,7 @@ func New(s Storage, c Cache) (*Repository, error) {
 	return &Repository{s, c}, nil
 }
 
-func (r *Repository) GetWeather(city string, userName string) (*Forecast, error) {
+func (r *Repository) GetWeather(city string, userName string) (*models.Forecast, error) {
 	if r.cache.IsExist(city) {
 		f := r.cache.Show(city)
 		return &f, nil
@@ -56,10 +51,13 @@ func (r *Repository) GetWeather(city string, userName string) (*Forecast, error)
 
 	wf, err := weatherapi.GetWeatherForecast(city)
 	if err != nil {
+		if errors.Is(err, models.ErrCityNotFound) {
+			return nil, err
+		}
 		return nil, e.Wrap("can't get weather", err)
 	}
 
-	f := Forecast{
+	f := models.Forecast{
 		CityName:        city,
 		UserName:        userName,
 		ValidUntilUTC:   time.Now().UTC().Add(RecentTime),

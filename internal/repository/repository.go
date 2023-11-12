@@ -48,7 +48,7 @@ func New(s Storage, c Cache) (*Repository, error) {
 	return &Repository{s, c}, nil
 }
 
-func (r Repository) GetWeather(city string, userName string) (*Forecast, error) {
+func (r *Repository) GetWeather(city string, userName string) (*Forecast, error) {
 	if r.cache.IsExist(city) {
 		f := r.cache.Show(city)
 		return &f, nil
@@ -76,6 +76,6 @@ func (r Repository) GetWeather(city string, userName string) (*Forecast, error) 
 	return &f, err
 }
 
-func (s *Repository) CloseConnect() error {
-	return s.storage.CloseConnect()
+func (r *Repository) CloseConnect() error {
+	return r.storage.CloseConnect()
 }

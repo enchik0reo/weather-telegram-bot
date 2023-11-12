@@ -23,7 +23,6 @@ func (p *EventProcessor) doCmd(text string, chatID int, userName string) error {
 	case HelpCmd:
 		return p.sendHelp(chatID)
 	default:
-		text = strings.ToLower(text)
 		return p.sendWeather(chatID, text, userName)
 	}
 }
@@ -58,7 +57,7 @@ func (p *EventProcessor) sendHello(chatID int) error {
 func makeAnswer(city string, f *models.Forecast) string {
 	ansver := strings.Builder{}
 
-	ansver.WriteString(fmt.Sprintf("Сейчас в городе %s %0.1f °C, ", city, f.WeatherForecast.Main.Temp))
+	ansver.WriteString(fmt.Sprintf("Сейчас в городе %s %0.1f °C | ", city, f.WeatherForecast.Main.Temp))
 	ansver.WriteString(fmt.Sprintf("%s.\n\n", makeDescription(f)))
 	ansver.WriteString(fmt.Sprintf("Ощущается как %0.0f °C.\n\n", f.WeatherForecast.Main.FeelsLike))
 
@@ -84,7 +83,7 @@ func makeDescription(f *models.Forecast) string {
 		if i == len(f.WeatherForecast.Weather)-1 {
 			desc.WriteString(w.Description)
 		} else {
-			desc.WriteString(fmt.Sprintf("%s; ", w.Description))
+			desc.WriteString(fmt.Sprintf("%s, ", w.Description))
 		}
 	}
 

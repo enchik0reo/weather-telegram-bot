@@ -32,7 +32,7 @@ func New(host, port, user, password, dbname, sslmode string) (*DBStorage, error)
 }
 
 func (db *DBStorage) SaveWeatherHistory(f models.Forecast) error {
-	q := `INSERT INTO weather VALUES ($1, $2, $3, $4)`
+	q := `INSERT INTO weather (city, user_name, valid_until, weather_forecast) VALUES ($1, $2, $3, $4)`
 
 	jsonForecast, err := json.Marshal(f.WeatherForecast)
 	if err != nil {

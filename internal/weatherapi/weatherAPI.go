@@ -30,12 +30,19 @@ func GetWeatherForecast(city string) (*models.WeatherForecast, error) {
 		return nil, e.Wrap("can't decode response form api", err)
 	}
 
-	cod, err := strconv.Atoi(wf.Cod)
-	if err != nil {
-		return nil, e.Wrap("can't convert code", err)
+	var icod int
+
+	switch f := wf.Cod.(type) {
+	case string:
+		icod, err = strconv.Atoi(f)
+		if err != nil {
+			return nil, e.Wrap("can't convert cod from api", err)
+		}
+	case float64:
+		icod = int(f)
 	}
 
-	if cod == http.StatusNotFound {
+	if icod == http.StatusNotFound {
 		return nil, models.ErrCityNotFound
 	}
 

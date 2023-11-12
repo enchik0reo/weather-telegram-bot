@@ -1,6 +1,10 @@
 package app
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	tgClient "github.com/enchik0reo/weatherTGBot/internal/clients/telegram"
 	"github.com/enchik0reo/weatherTGBot/internal/config"
 	"github.com/enchik0reo/weatherTGBot/internal/consumer/eventconsumer"
@@ -57,7 +61,23 @@ func New() *App {
 }
 
 func (a *App) Run() {
-	if err := a.eventConsumer.Start(); err != nil {
-		a.log.Fatalf("the consumer stoped %v", err)
+	go func() {
+		if err := a.eventConsumer.Start(); err != nil {
+			a.log.Fatalf("the consumer stoped %v", err)
+		}
+	}()
+
+	a.log.Info("Application successfully started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	a.log.Info("Application is shutting down")
+
+	if err := a.tgEventProc.Stop(); err != nil {
+		a.log.Fatalf("error occured on processor shutting down: %s", err.Error())
 	}
+
+	a.log.Info("Application successfully shutted down")
 }

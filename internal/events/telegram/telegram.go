@@ -9,6 +9,7 @@ import (
 
 type Repository interface {
 	GetWeather(city string, userName string) (*models.Forecast, error)
+	CloseConnect() error
 }
 
 type Client interface {
@@ -64,6 +65,10 @@ func (p *EventProcessor) Process(ev models.Event) error {
 	default:
 		return e.Wrap("can't process message", ErrUnknownEventType)
 	}
+}
+
+func (p *EventProcessor) Stop() error {
+	return p.repository.CloseConnect()
 }
 
 func (p *EventProcessor) processMessage(ev models.Event) error {

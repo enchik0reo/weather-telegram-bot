@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/enchik0reo/weatherTGBot/internal/models"
 	"github.com/enchik0reo/weatherTGBot/pkg/e"
@@ -29,7 +30,12 @@ func GetWeatherForecast(city string) (*models.WeatherForecast, error) {
 		return nil, e.Wrap("can't decode response form api", err)
 	}
 
-	if wf.Cod == http.StatusNotFound {
+	cod, err := strconv.Atoi(wf.Cod)
+	if err != nil {
+		return nil, e.Wrap("can't convert code", err)
+	}
+
+	if cod == http.StatusNotFound {
 		return nil, models.ErrCityNotFound
 	}
 

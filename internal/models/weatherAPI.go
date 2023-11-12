@@ -24,7 +24,7 @@ type WeatherForecast struct {
 	Weather []weather `json:"weather"`
 	Main    main      `json:"main"`
 	Wind    wind      `json:"wind"`
-	Cod     int       `json:"cod"`
+	Cod     string    `json:"cod"`
 }
 
 type Forecast struct {

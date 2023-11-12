@@ -23,13 +23,12 @@ func (p *EventProcessor) doCmd(text string, chatID int, userName string) error {
 	case HelpCmd:
 		return p.sendHelp(chatID)
 	default:
-		text = strings.ToLower(text)
-		text = strings.ToUpper(string(text[0]))
 		return p.sendWeather(chatID, text, userName)
 	}
 }
 
 func (p *EventProcessor) sendWeather(chatID int, city, userName string) error {
+
 	forecast, err := p.repository.GetWeather(city, userName)
 	if err != nil {
 		if errors.Is(err, models.ErrCityNotFound) {

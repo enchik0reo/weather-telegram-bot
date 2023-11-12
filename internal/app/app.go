@@ -37,7 +37,7 @@ func New() *App {
 
 	a.tgClient = tgClient.New(tgBothost, a.cfg.Token)
 
-	s, err := storage.New(a.cfg.DB.Host, a.cfg.DB.Port, a.cfg.DB.User, a.cfg.DB.User, a.cfg.DB.DBName, a.cfg.DB.SSLMode)
+	s, err := storage.New(a.cfg.DB.Host, a.cfg.DB.Port, a.cfg.DB.User, a.cfg.DB.Password, a.cfg.DB.DBName, a.cfg.DB.SSLMode)
 	if err != nil {
 		a.log.Fatalf("an error occurred while creating new storage: %v", err)
 	}

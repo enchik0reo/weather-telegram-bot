@@ -7,6 +7,10 @@ import (
 	"github.com/enchik0reo/weatherTGBot/pkg/e"
 )
 
+const (
+	RecentTime = 15 * time.Minute
+)
+
 type Storage interface {
 	SaveWeatherHistory(f Forecast) error
 	GetRecentForecasts() ([]Forecast, error)
@@ -24,6 +28,13 @@ type Repository struct {
 	cache   Cache
 }
 
+type Forecast struct {
+	CityName        string
+	UserName        string
+	ValidUntilUTC   time.Time
+	WeatherForecast weatherapi.WeatherForecast
+}
+
 func New(s Storage, c Cache) (*Repository, error) {
 	forecasts, err := s.GetRecentForecasts()
 	if err != nil {
@@ -37,30 +48,32 @@ func New(s Storage, c Cache) (*Repository, error) {
 	return &Repository{s, c}, nil
 }
 
-func (r Repository) SaveWeather(forecast Forecast) error {
-	r.cache.Save(forecast)
+func (r Repository) GetWeather(city string, userName string) (*Forecast, error) {
+	if r.cache.IsExist(city) {
+		f := r.cache.Show(city)
+		return &f, nil
+	}
 
-	err := r.storage.SaveWeatherHistory(forecast)
+	wf, err := weatherapi.GetWeatherForecast(city)
+	if err != nil {
+		return nil, e.Wrap("can't get weather", err)
+	}
+
+	f := Forecast{
+		CityName:        city,
+		UserName:        userName,
+		ValidUntilUTC:   time.Now().UTC().Add(RecentTime),
+		WeatherForecast: *wf,
+	}
+
+	r.cache.Save(f)
+
+	err = r.storage.SaveWeatherHistory(f)
 	if err != nil {
 		err = e.Wrap("can't save to db", err)
 	}
 
-	return err
-}
-
-func (r Repository) GetWeather(city string) Forecast {
-	return r.cache.Show(city)
-}
-
-func (r Repository) IsExist(city string) bool {
-	return r.cache.IsExist(city)
-}
-
-type Forecast struct {
-	CityName        string
-	UserName        string
-	ValidUntilUTC   time.Time
-	WeatherForecast weatherapi.WeatherForecast
+	return &f, err
 }
 
 func (s *Repository) CloseConnect() error {

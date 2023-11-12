@@ -3,8 +3,9 @@ package weatherapi
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/enchik0reo/weatherTGBot/pkg/e"
 )
 
 const (
@@ -31,18 +32,20 @@ type WeatherForecast struct {
 	Wind    Wind      `json:"wind"`
 }
 
-func GetWeatherForecast(city string) *WeatherForecast {
+func GetWeatherForecast(city string) (*WeatherForecast, error) {
 	req := fmt.Sprintf("%s%s%s", requestPart1, city, requestPart2)
 
 	resp, err := http.Get(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, e.Wrap("can't get weather from api", err)
 	}
 	defer resp.Body.Close()
 
 	wf := &WeatherForecast{}
 
-	json.NewDecoder(resp.Body).Decode(wf)
+	if err := json.NewDecoder(resp.Body).Decode(wf); err != nil {
+		return nil, e.Wrap("can't decode response form api", err)
+	}
 
-	return wf
+	return wf, nil
 }

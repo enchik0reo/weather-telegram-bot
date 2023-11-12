@@ -56,7 +56,7 @@ func (c *Consumer) handleEvents(events []models.Event) error {
 		go func(event models.Event, wg *sync.WaitGroup) {
 			defer wg.Done()
 
-			c.log.Infof("got new event: %s", event.Text)
+			c.log.Debugf("got new event: %s", event.Text)
 
 			if err := c.processor.Process(event); err != nil {
 				c.log.Errorf("can't handle event: %s", err.Error())

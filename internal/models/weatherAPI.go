@@ -21,10 +21,10 @@ type wind struct {
 }
 
 type WeatherForecast struct {
-	Cod     interface{} `json:"cod"`
 	Weather []weather   `json:"weather"`
 	Main    main        `json:"main"`
 	Wind    wind        `json:"wind"`
+	Cod     interface{} `json:"cod"`
 }
 
 type Forecast struct {

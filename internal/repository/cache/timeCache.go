@@ -35,7 +35,7 @@ func (c *TimeCache) IsExist(city string) bool {
 	c.RLock()
 	defer c.RUnlock()
 	if f, ok := c.m[city]; ok {
-		if f.ValidUntilUTC.Before(time.Now().UTC()) {
+		if time.Now().UTC().Before(f.ValidUntilUTC) {
 			return true
 		}
 		delete(c.m, city)

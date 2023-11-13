@@ -36,7 +36,7 @@ func (c *Consumer) Start() error {
 		}
 
 		if len(gotEvents) == 0 {
-			time.Sleep(1 * time.Second)
+			time.Sleep(500 * time.Millisecond)
 			continue
 		}
 

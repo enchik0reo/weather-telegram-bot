@@ -103,7 +103,7 @@ func event(upd models.Update) models.Event {
 	if updType == models.Message {
 		ev.Meta = Meta{
 			ChatID:   upd.Message.Chat.ID,
-			UserName: upd.Message.Text,
+			UserName: upd.Message.From.UserName,
 		}
 	}
 

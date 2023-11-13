@@ -30,10 +30,16 @@ func (p *EventProcessor) doCmd(text string, chatID int, userName string) error {
 
 func correctCase(text string) string {
 	text = strings.ToLower(text)
-	rs := []rune(text)
-	ss := strings.ToUpper(string(rs[0]))
-	rs[0] = []rune(ss)[0]
-	return string(rs)
+	words := strings.Split(text, " ")
+
+	for i, w := range words {
+		rs := []rune(w)
+		ss := strings.ToUpper(string(rs[0]))
+		rs[0] = []rune(ss)[0]
+		words[i] = string(rs)
+	}
+
+	return strings.Join(words, " ")
 }
 
 func (p *EventProcessor) sendWeather(chatID int, city, userName string) error {

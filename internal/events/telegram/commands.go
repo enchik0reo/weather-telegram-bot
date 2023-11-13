@@ -23,8 +23,17 @@ func (p *EventProcessor) doCmd(text string, chatID int, userName string) error {
 	case HelpCmd:
 		return p.sendHelp(chatID)
 	default:
+		text = correctCase(text)
 		return p.sendWeather(chatID, text, userName)
 	}
+}
+
+func correctCase(text string) string {
+	text = strings.ToLower(text)
+	rs := []rune(text)
+	ss := strings.ToUpper(string(rs[0]))
+	rs[0] = []rune(ss)[0]
+	return string(rs)
 }
 
 func (p *EventProcessor) sendWeather(chatID int, city, userName string) error {

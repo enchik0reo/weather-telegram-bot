@@ -5,14 +5,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	tgClient "github.com/enchik0reo/weatherTGBot/internal/clients/telegram"
-	"github.com/enchik0reo/weatherTGBot/internal/config"
-	"github.com/enchik0reo/weatherTGBot/internal/consumer/eventconsumer"
-	"github.com/enchik0reo/weatherTGBot/internal/events/telegram"
-	"github.com/enchik0reo/weatherTGBot/internal/repository"
-	"github.com/enchik0reo/weatherTGBot/internal/repository/cache"
-	"github.com/enchik0reo/weatherTGBot/internal/repository/storage"
-	"github.com/enchik0reo/weatherTGBot/pkg/mylogs"
+	tgClient "github.com/enchik0reo/weatherTelegramBot/internal/clients/telegram"
+	"github.com/enchik0reo/weatherTelegramBot/internal/config"
+	"github.com/enchik0reo/weatherTelegramBot/internal/consumer/eventconsumer"
+	"github.com/enchik0reo/weatherTelegramBot/internal/events/telegram"
+	"github.com/enchik0reo/weatherTelegramBot/internal/repository"
+	"github.com/enchik0reo/weatherTelegramBot/internal/repository/cache"
+	"github.com/enchik0reo/weatherTelegramBot/internal/repository/storage"
+	"github.com/enchik0reo/weatherTelegramBot/pkg/mylogs"
 )
 
 const (

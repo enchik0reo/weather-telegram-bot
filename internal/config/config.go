@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/enchik0reo/weatherTGBot/pkg/e"
+	"github.com/enchik0reo/weatherTelegramBot/pkg/e"
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"

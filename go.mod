@@ -1,4 +1,4 @@
-module github.com/enchik0reo/weatherTGBot
+module github.com/enchik0reo/weatherTelegramBot
 
 go 1.19
 

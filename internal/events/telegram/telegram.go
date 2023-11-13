@@ -3,8 +3,8 @@ package telegram
 import (
 	"errors"
 
-	"github.com/enchik0reo/weatherTGBot/internal/models"
-	"github.com/enchik0reo/weatherTGBot/pkg/e"
+	"github.com/enchik0reo/weatherTelegramBot/internal/models"
+	"github.com/enchik0reo/weatherTelegramBot/pkg/e"
 )
 
 type Repository interface {

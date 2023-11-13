@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/enchik0reo/weatherTGBot/internal/models"
+	"github.com/enchik0reo/weatherTelegramBot/internal/models"
 )
 
 type TimeCache struct {

@@ -22,11 +22,6 @@ var (
 	ErrUnknownMetaType  = errors.New("unknown meta type")
 )
 
-type Meta struct {
-	ChatID   int
-	UserName string
-}
-
 type EventProcessor struct {
 	client     Client
 	offset     int
@@ -84,10 +79,10 @@ func (p *EventProcessor) processMessage(ev models.Event) error {
 	return nil
 }
 
-func meta(ev models.Event) (Meta, error) {
-	met, ok := ev.Meta.(Meta)
+func meta(ev models.Event) (models.Meta, error) {
+	met, ok := ev.Meta.(models.Meta)
 	if !ok {
-		return Meta{}, e.Wrap("can't get meta", ErrUnknownMetaType)
+		return models.Meta{}, e.Wrap("can't get meta", ErrUnknownMetaType)
 	}
 
 	return met, nil
@@ -101,7 +96,7 @@ func event(upd models.Update) models.Event {
 	}
 
 	if updType == models.Message {
-		ev.Meta = Meta{
+		ev.Meta = models.Meta{
 			ChatID:   upd.Message.Chat.ID,
 			UserName: upd.Message.From.UserName,
 		}

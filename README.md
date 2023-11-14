@@ -1,10 +1,6 @@
 # Weather Telegram Bot
-## Run PostgreSQL:
+## Run App:
 ```
-docker-compose up -d
-```
-## Run bot:
-```
-go run ./cmd/weatherTelegramBot/main.go
+docker-compose up --build go
 ```
 Bot takes the name of the city and returns the weather in it

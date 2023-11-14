@@ -23,3 +23,8 @@ type From struct {
 type Chat struct {
 	ID int `json:"id"`
 }
+
+type Meta struct {
+	ChatID   int
+	UserName string
+}

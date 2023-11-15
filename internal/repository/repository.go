@@ -2,11 +2,13 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/enchik0reo/weatherTelegramBot/internal/models"
 	"github.com/enchik0reo/weatherTelegramBot/internal/weatherapi"
 	"github.com/enchik0reo/weatherTelegramBot/pkg/e"
+	"github.com/enchik0reo/weatherTelegramBot/pkg/mylogs"
 )
 
 const (
@@ -20,17 +22,19 @@ type Storage interface {
 }
 
 type Cache interface {
-	Save(forecast models.Forecast)
-	Show(city string) models.Forecast
-	IsExist(city string) bool
+	Save(forecast models.Forecast) error
+	Show(city string) (models.Forecast, error)
+	Exist(city string) bool
+	Stop() error
 }
 
 type Repository struct {
 	storage Storage
 	cache   Cache
+	log     *mylogs.Lgr
 }
 
-func New(s Storage, c Cache) (*Repository, error) {
+func New(s Storage, c Cache, log *mylogs.Lgr) (*Repository, error) {
 	forecasts, err := s.GetRecentForecasts()
 	if err != nil {
 		return nil, e.Wrap("can't warmup cache", err)
@@ -40,12 +44,17 @@ func New(s Storage, c Cache) (*Repository, error) {
 		c.Save(f)
 	}
 
-	return &Repository{s, c}, nil
+	return &Repository{s, c, log}, nil
 }
 
 func (r *Repository) GetWeather(city string, userName string) (*models.Forecast, error) {
-	if r.cache.IsExist(city) {
-		f := r.cache.Show(city)
+	f := models.Forecast{}
+
+	if r.cache.Exist(city) {
+		f, err := r.cache.Show(city)
+		if err != nil {
+			r.log.Debugf("can't get weather from cache %v", err)
+		}
 		return &f, nil
 	}
 
@@ -57,7 +66,7 @@ func (r *Repository) GetWeather(city string, userName string) (*models.Forecast,
 		return nil, e.Wrap("can't get weather", err)
 	}
 
-	f := models.Forecast{
+	f = models.Forecast{
 		CityName:        city,
 		UserName:        userName,
 		ValidUntilUTC:   time.Now().UTC().Add(RecentTime),
@@ -75,5 +84,26 @@ func (r *Repository) GetWeather(city string, userName string) (*models.Forecast,
 }
 
 func (r *Repository) CloseConnect() error {
-	return r.storage.CloseConnect()
+	var msg string
+	var err error
+
+	err = r.cache.Stop()
+	if err != nil {
+		msg = fmt.Sprintf("%v", err)
+	}
+
+	err = r.storage.CloseConnect()
+	if err != nil {
+		if msg == "" {
+			msg = fmt.Sprintf("%v", err)
+		} else {
+			msg = fmt.Sprintf("%s; %v", msg, err)
+		}
+	}
+
+	if msg == "" {
+		return nil
+	} else {
+		return e.Wrap("can't close repository connection", fmt.Errorf(msg))
+	}
 }

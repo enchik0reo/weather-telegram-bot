@@ -12,7 +12,7 @@ type TimeCache struct {
 	sync.RWMutex
 }
 
-func New() *TimeCache {
+func NewMapCache() *TimeCache {
 	return &TimeCache{
 		m:       make(map[string]models.Forecast),
 		RWMutex: sync.RWMutex{},

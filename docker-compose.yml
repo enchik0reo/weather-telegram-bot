@@ -6,6 +6,7 @@ services:
     command: ./wait-for-postgres.sh db ./weather_telegram_bot
     depends_on:
       - db
+      - cache
     environment:
       - POSTGRES_PASSWORD=qwerty
     volumes:
@@ -23,3 +24,10 @@ services:
       - 5432:5432
     volumes:
       - ./script/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  cache:
+    image: redis:7.2.3-bookworm 
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes

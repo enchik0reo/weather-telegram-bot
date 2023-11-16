@@ -46,9 +46,12 @@ func New() *App {
 		a.log.Fatalf("an error occurred while creating new storage: %v", err)
 	}
 
-	c := cache.New()
+	c, err := cache.NewRedis(a.cfg.Cache.Host, a.cfg.Cache.Port)
+	if err != nil {
+		a.log.Fatalf("an error occurred while creating new cache: %v", err)
+	}
 
-	repo, err := repository.New(s, c)
+	repo, err := repository.New(s, c, a.log)
 	if err != nil {
 		a.log.Fatalf("an error occurred while creating new repository: %v", err)
 	}

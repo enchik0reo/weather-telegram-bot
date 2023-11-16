@@ -3,6 +3,7 @@ module github.com/enchik0reo/weatherTelegramBot
 go 1.19
 
 require (
+	github.com/gomodule/redigo v1.8.9
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9

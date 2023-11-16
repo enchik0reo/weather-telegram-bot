@@ -4,3 +4,6 @@ db:
   dbname: "wfdb"
   user: "postgres"
   sslmode: "disable"
+cache:
+  host: "cache"
+  port: "6379"

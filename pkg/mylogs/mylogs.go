@@ -20,11 +20,11 @@ func New() *Lgr {
 	l.SetOutput(io.Discard)
 	l.SetReportCaller(true)
 
-	if err := os.MkdirAll("logs", 0644); err != nil {
+	if err := os.MkdirAll("logs", 0744); err != nil {
 		panic(err)
 	}
 
-	abs, err := filepath.Abs("/logs")
+	abs, err := filepath.Abs("logs")
 	if err != nil {
 		panic(err)
 	}
